@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+}
+
+body {
+  @apply bg-soft text-ink antialiased;
+}
+
+@layer components {
+  .btn-gold {
+    @apply inline-flex items-center justify-center rounded-md bg-gold px-6 py-3 font-semibold text-matte
+           transition hover:bg-gold-soft disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-dark {
+    @apply inline-flex items-center justify-center rounded-md bg-matte px-6 py-3 font-semibold text-white
+           transition hover:bg-ink disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-md border border-matte/20 px-6 py-3 font-semibold
+           text-matte transition hover:border-gold hover:text-gold-soft;
+  }
+  .container-px {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .card {
+    @apply rounded-xl border border-black/5 bg-white shadow-sm transition hover:shadow-luxe;
+  }
+}
+
+/* ─── Hero background motion (used when no video/image asset is supplied) ─── */
+@keyframes vx-gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes vx-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.12); }
+  66% { transform: translate(-20px, 20px) scale(0.94); }
+}
+@keyframes vx-kenburns {
+  0% { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.15) translate(-2%, -2%); }
+}
+@keyframes vx-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes vx-shine {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.vx-hero-gradient {
+  background: linear-gradient(120deg, #111827 0%, #1f2937 35%, #3b2f10 65%, #111827 100%);
+  background-size: 300% 300%;
+  animation: vx-gradient 18s ease infinite;
+}
+.vx-orb { animation: vx-float 16s ease-in-out infinite; }
+.vx-kenburns { animation: vx-kenburns 20s ease-in-out infinite alternate; }
+.vx-fade-up { animation: vx-fade-up 0.8s ease both; }
+.vx-gold-shine {
+  background: linear-gradient(90deg, #C9A84C 0%, #F4E3A1 50%, #C9A84C 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: vx-shine 4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vx-hero-gradient, .vx-orb, .vx-kenburns, .vx-fade-up, .vx-gold-shine { animation: none; }
+}
