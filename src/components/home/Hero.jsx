@@ -38,10 +38,10 @@ export default function Hero() {
       </div>
 
       {/* Content */}
-      <div className="container-px relative grid min-h-[88vh] items-center py-20 sm:min-h-[80vh] sm:py-24">
+      <div className="container-px relative grid min-h-[70vh] items-center py-16 sm:min-h-[80vh] sm:py-24">
         <div className="max-w-2xl">
           <p className="vx-fade-up mb-4 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-white/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-gold backdrop-blur sm:px-4 sm:text-xs">
-            ✦ Premium · Exclusive · Trusted
+             Premium · Exclusive · Trusted
           </p>
           <h1 className="vx-fade-up font-serif text-4xl font-bold leading-[1.08] sm:text-5xl md:text-7xl" style={{ animationDelay: '0.1s' }}>
             Where luxury meets <span className="vx-gold-shine">everyday</span>.
@@ -50,9 +50,10 @@ export default function Hero() {
           <p className="vx-fade-up mt-5 hidden max-w-lg text-base text-white/75 sm:mt-6 sm:block sm:text-lg" style={{ animationDelay: '0.2s' }}>
             Curated fashion, cosmetics, perfumes and mobile accessories — delivered across Bangladesh with Cash on Delivery, bKash, Nagad &amp; cards.
           </p>
-          <div className="vx-fade-up mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4" style={{ animationDelay: '0.3s' }}>
-            <Link href="#catalog" className="btn-gold px-8 text-base">Shop the collection</Link>
-            <Link href="#categories" className="btn-outline border-white/30 px-8 text-base text-white hover:text-gold">Explore categories</Link>
+          {/* Much bigger gap above the buttons on mobile (description is hidden there) */}
+          <div className="vx-fade-up mt-28 flex flex-col gap-4 sm:mt-8 sm:flex-row sm:gap-4" style={{ animationDelay: '0.3s' }}>
+            <Link href="#catalog" className="btn-gold px-8 py-3.5 text-base sm:py-3">Shop the collection</Link>
+            <Link href="#categories" className="btn-outline border-white/30 px-8 py-3.5 text-base text-white hover:text-gold sm:py-3">Explore categories</Link>
           </div>
           {/* Stats row hidden on mobile
           <div className="vx-fade-up mt-10  flex-wrap gap-x-8 gap-y-3 text-sm text-white/60 sm:mt-12 sm:flex" style={{ animationDelay: '0.4s' }}>
@@ -60,7 +61,7 @@ export default function Hero() {
             <span><strong className="text-white">100%</strong> authentic</span>
             <span><strong className="text-white">Nationwide</strong> delivery</span>
           </div> */}
-          <div className="vx-fade-up mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-white/60 sm:mt-12" style={{ animationDelay: '0.4s' }}>
+          <div className="vx-fade-up mt-12 flex flex-wrap gap-x-8 gap-y-3 text-sm text-white/60" style={{ animationDelay: '0.4s' }}>
             <span><strong className="text-white">10k+</strong> happy customers</span>
             <span><strong className="text-white">100%</strong> authentic</span>
             <span><strong className="text-white">Nationwide</strong> delivery</span>
