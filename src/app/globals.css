@@ -75,3 +75,10 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .vx-hero-gradient, .vx-orb, .vx-kenburns, .vx-fade-up, .vx-gold-shine { animation: none; }
 }
+
+/* Print: show only the invoice, full width, no chrome */
+@media print {
+  body { background: #fff; }
+  header, footer, .no-print { display: none !important; }
+  .invoice { border: none !important; box-shadow: none !important; max-width: 100% !important; padding: 0 !important; }
+}

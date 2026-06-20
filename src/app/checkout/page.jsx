@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/store/cart';
 import { bdt } from '@/lib/format';
 import { api } from '@/lib/api';
+import { useAuth } from '@/components/AuthProvider';
 
 const FREE_SHIPPING_OVER = 3000;
 const SHIPPING_FEE = 60;
@@ -19,6 +20,7 @@ const PAYMENT_METHODS = [
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const items = useCart((s) => s.items);
   const subtotal = useCart((s) => s.subtotal());
   const clear = useCart((s) => s.clear);
@@ -28,8 +30,27 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
+  // Loyalty (logged-in only)
+  const [loyalty, setLoyalty] = useState(null);
+  const [usePoints, setUsePoints] = useState(false);
+
+  // Prefill contact details + load points for logged-in shoppers
+  useEffect(() => {
+    if (user) {
+      setForm((f) => ({ ...f, name: f.name || user.name || '', email: f.email || user.email || '', phone: f.phone || user.phone || '' }));
+      api('/loyalty/me').then(setLoyalty).catch(() => {});
+    }
+  }, [user]);
+
   const shipping = subtotal >= FREE_SHIPPING_OVER ? 0 : SHIPPING_FEE;
-  const total = subtotal + shipping;
+
+  // Redeem the customer's full balance (capped so discount ≤ subtotal).
+  const bdtPerPoint = loyalty?.rates?.bdtPerPoint || 0.5;
+  const minRedeem = loyalty?.rates?.minRedeem || 100;
+  const canRedeem = !!loyalty && loyalty.balance >= minRedeem;
+  const redeemPoints = usePoints && canRedeem ? Math.min(loyalty.balance, Math.floor(subtotal / bdtPerPoint)) : 0;
+  const discount = Math.round(redeemPoints * bdtPerPoint);
+  const total = Math.max(0, subtotal + shipping - discount);
 
   const update = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -53,6 +74,7 @@ export default function CheckoutPage() {
           items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
           shipping: form,
           paymentMethod,
+          ...(redeemPoints > 0 ? { redeemPoints } : {}),
         },
       });
       clear();
@@ -72,7 +94,14 @@ export default function CheckoutPage() {
         <div className="space-y-8 lg:col-span-2">
           <section className="card p-6">
             <h2 className="mb-4 font-serif text-xl font-bold text-matte">Shipping Details</h2>
-            <p className="mb-4 text-sm text-ink/60">Guest checkout — no account needed.</p>
+            {user ? (
+              <p className="mb-4 text-sm text-ink/60">Signed in as <span className="font-medium text-matte">{user.name}</span> — this order will be saved to your account.</p>
+            ) : (
+              <p className="mb-4 text-sm text-ink/60">
+                Guest checkout — no account needed.{' '}
+                <Link href="/login?next=/checkout" className="font-medium text-gold-soft hover:text-gold">Sign in</Link> to earn points.
+              </p>
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
               <input className={field} placeholder="Full name *" required value={form.name} onChange={update('name')} />
               <input className={field} placeholder="Phone *" required value={form.phone} onChange={update('phone')} />
@@ -106,6 +135,25 @@ export default function CheckoutPage() {
             </div>
           </section>
 
+          {/* Loyalty redemption */}
+          {user && loyalty && (
+            <section className="card p-6">
+              <h2 className="mb-1 font-serif text-xl font-bold text-matte">VelouraX Rewards</h2>
+              <p className="mb-4 text-sm text-ink/60">You have <span className="font-semibold text-matte">{loyalty.balance} points</span> ({bdt(loyalty.valueBDT)} value).</p>
+              {canRedeem ? (
+                <label className="flex cursor-pointer items-center justify-between rounded-lg border border-matte/15 p-4 hover:border-gold/50">
+                  <div>
+                    <p className="font-medium text-matte">Redeem points on this order</p>
+                    <p className="text-xs text-ink/60">Save {bdt(discount || Math.round(Math.min(loyalty.balance, Math.floor(subtotal / bdtPerPoint)) * bdtPerPoint))} now</p>
+                  </div>
+                  <input type="checkbox" checked={usePoints} onChange={(e) => setUsePoints(e.target.checked)} className="h-5 w-5 accent-gold" />
+                </label>
+              ) : (
+                <p className="text-xs text-ink/50">Collect at least {minRedeem} points to redeem.</p>
+              )}
+            </section>
+          )}
+
           {error && <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
         </div>
 
@@ -122,6 +170,9 @@ export default function CheckoutPage() {
           <dl className="mt-4 space-y-2 border-t border-black/5 pt-4 text-sm">
             <div className="flex justify-between"><dt className="text-ink/70">Subtotal</dt><dd>{bdt(subtotal)}</dd></div>
             <div className="flex justify-between"><dt className="text-ink/70">Shipping</dt><dd>{shipping === 0 ? 'Free' : bdt(shipping)}</dd></div>
+            {discount > 0 && (
+              <div className="flex justify-between text-emerald-brand"><dt>Points discount ({redeemPoints} pts)</dt><dd>−{bdt(discount)}</dd></div>
+            )}
             <div className="flex justify-between border-t border-black/5 pt-2 text-base"><dt className="font-semibold">Total</dt><dd className="font-bold text-matte">{bdt(total)}</dd></div>
           </dl>
           <button type="submit" disabled={submitting} className="btn-gold mt-6 w-full">

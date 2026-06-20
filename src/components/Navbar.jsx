@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useCart } from '@/store/cart';
 import { useWishlist } from '@/store/wishlist';
+import { useAuth } from '@/components/AuthProvider';
 
 const links = [
   { href: '/?category=fashion', label: 'Fashion' },
@@ -16,6 +17,7 @@ const links = [
 export default function Navbar() {
   const count = useCart((s) => s.count());
   const wishCount = useWishlist((s) => s.count());
+  const { user } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -41,8 +43,8 @@ export default function Navbar() {
         </nav>
 
         <div className="flex items-center gap-4 sm:gap-5">
-          <Link href="/track" className="hidden text-sm text-white/70 transition hover:text-gold sm:block">
-            Track order
+          <Link href={mounted && user ? '/account' : '/login'} className="hidden text-sm text-white/70 transition hover:text-gold sm:block">
+            {mounted && user ? `Hi, ${user.name.split(' ')[0]}` : 'Sign in'}
           </Link>
           <Link href="/wishlist" className="relative inline-flex items-center gap-2 text-sm font-medium hover:text-gold" aria-label="Wishlist">
             <span aria-hidden>♥</span>
@@ -88,8 +90,11 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
-            <Link href="/track" onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-white/80 hover:text-gold">
+            <Link href="/track" onClick={() => setOpen(false)} className="border-b border-white/5 py-3 text-sm font-medium text-white/80 hover:text-gold">
               Track order
+            </Link>
+            <Link href={mounted && user ? '/account' : '/login'} onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-gold">
+              {mounted && user ? 'My account' : 'Sign in / Register'}
             </Link>
           </div>
         </nav>
