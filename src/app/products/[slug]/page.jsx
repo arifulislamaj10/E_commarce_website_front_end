@@ -1,9 +1,10 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getProduct } from '@/lib/api';
 import { bdt } from '@/lib/format';
 import AddToCartButton from '@/components/AddToCartButton';
+import WishlistButton from '@/components/WishlistButton';
+import ProductGallery from '@/components/ProductGallery';
 import ProductReviews from '@/components/ProductReviews';
 
 export const dynamic = 'force-dynamic';
@@ -32,20 +33,7 @@ export default async function ProductPage({ params }) {
       </nav>
 
       <div className="grid gap-10 md:grid-cols-2">
-        <div className="space-y-4">
-          <div className="relative aspect-square overflow-hidden rounded-2xl bg-soft">
-            <Image src={product.images?.[0] || product.thumbnail} alt={product.title} fill sizes="50vw" className="object-cover" priority />
-          </div>
-          {product.images?.length > 1 && (
-            <div className="grid grid-cols-4 gap-3">
-              {product.images.slice(0, 4).map((img, i) => (
-                <div key={i} className="relative aspect-square overflow-hidden rounded-lg bg-soft ring-1 ring-black/5">
-                  <Image src={img} alt={`${product.title} ${i + 1}`} fill sizes="20vw" className="object-cover" />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <ProductGallery images={product.images?.length ? product.images : [product.thumbnail]} title={product.title} />
 
         <div>
           <p className="text-sm uppercase tracking-wide text-gold-soft">{product.brand}</p>
@@ -68,8 +56,9 @@ export default async function ProductPage({ params }) {
 
           <p className="mt-6 leading-relaxed text-ink/80">{product.description}</p>
 
-          <div className="mt-8">
+          <div className="mt-8 space-y-3">
             <AddToCartButton product={product} />
+            <WishlistButton product={product} variant="full" />
           </div>
 
           <div className="mt-8 grid grid-cols-3 gap-4 border-t border-black/5 pt-6 text-center text-xs text-ink/70">

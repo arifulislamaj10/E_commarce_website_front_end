@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useCart } from '@/store/cart';
+import { useWishlist } from '@/store/wishlist';
 
 const links = [
   { href: '/?category=fashion', label: 'Fashion' },
@@ -14,6 +15,7 @@ const links = [
 
 export default function Navbar() {
   const count = useCart((s) => s.count());
+  const wishCount = useWishlist((s) => s.count());
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -41,6 +43,15 @@ export default function Navbar() {
         <div className="flex items-center gap-4 sm:gap-5">
           <Link href="/track" className="hidden text-sm text-white/70 transition hover:text-gold sm:block">
             Track order
+          </Link>
+          <Link href="/wishlist" className="relative inline-flex items-center gap-2 text-sm font-medium hover:text-gold" aria-label="Wishlist">
+            <span aria-hidden>♥</span>
+            <span className="hidden sm:inline">Wishlist</span>
+            {mounted && wishCount > 0 && (
+              <span className="absolute -right-3 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 text-xs font-bold text-matte">
+                {wishCount}
+              </span>
+            )}
           </Link>
           <Link href="/cart" className="relative inline-flex items-center gap-2 text-sm font-medium hover:text-gold">
             <span aria-hidden>🛍️</span>
