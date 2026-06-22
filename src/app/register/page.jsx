@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
+import GoogleSignInButton from '@/components/GoogleSignInButton';
 
 function RegisterInner() {
   const { register } = useAuth();
@@ -22,7 +23,8 @@ function RegisterInner() {
     setError(null);
     try {
       await register({ ...form, phone: form.phone || undefined });
-      router.push(next);
+      // New accounts land on email verification, then continue to `next`.
+      router.push(`/verify-email?next=${encodeURIComponent(next)}`);
     } catch (err) {
       setError(err.message + (err.details ? ` — ${err.details.join(', ')}` : ''));
       setBusy(false);
@@ -57,6 +59,7 @@ function RegisterInner() {
           </div>
           {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
           <button type="submit" className="btn-gold w-full" disabled={busy}>{busy ? 'Creating…' : 'Create account'}</button>
+          <GoogleSignInButton next={next} onError={setError} />
         </form>
         <p className="mt-4 text-center text-sm text-ink/60">
           Already have an account?{' '}

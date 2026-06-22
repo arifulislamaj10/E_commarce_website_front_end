@@ -14,10 +14,20 @@ const TIER_STYLE = {
 };
 
 export default function AccountPage() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, resendVerification } = useAuth();
   const router = useRouter();
   const [loyalty, setLoyalty] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [verifyMsg, setVerifyMsg] = useState(null);
+
+  async function handleResendVerify() {
+    try {
+      await resendVerification();
+      router.push('/verify-email?next=/account');
+    } catch (err) {
+      setVerifyMsg(err.message);
+    }
+  }
 
   useEffect(() => {
     if (!loading && !user) router.replace('/login?next=/account');
@@ -48,6 +58,18 @@ export default function AccountPage() {
         </div>
         <button onClick={handleLogout} className="text-sm text-ink/50 hover:text-red-600">Sign out</button>
       </div>
+
+      {/* Email-verification prompt */}
+      {!user.isEmailVerified && (
+        <div className="mb-6 flex flex-col gap-2 rounded-lg border border-gold/40 bg-gold/10 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+          <span className="text-matte/80">
+            📧 Your email isn't verified yet. {verifyMsg && <span className="text-red-600">{verifyMsg}</span>}
+          </span>
+          <button onClick={handleResendVerify} className="self-start font-semibold text-gold-soft hover:text-gold sm:self-auto">
+            Verify now →
+          </button>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Loyalty card */}

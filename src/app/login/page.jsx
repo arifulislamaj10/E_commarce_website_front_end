@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
+import GoogleSignInButton from '@/components/GoogleSignInButton';
 
 function LoginInner() {
   const { login } = useAuth();
@@ -44,11 +45,15 @@ function LoginInner() {
             <input className={field} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink/60">Password</label>
+            <div className="mb-1 flex items-center justify-between">
+              <label className="block text-xs font-semibold uppercase tracking-wide text-ink/60">Password</label>
+              <Link href="/forgot-password" className="text-xs font-semibold text-gold-soft hover:text-gold">Forgot password?</Link>
+            </div>
             <input className={field} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
           {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
           <button type="submit" className="btn-gold w-full" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
+          <GoogleSignInButton next={next} onError={setError} />
         </form>
         <p className="mt-4 text-center text-sm text-ink/60">
           New to VelouraX?{' '}
